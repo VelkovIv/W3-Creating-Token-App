@@ -17,7 +17,7 @@ function Transfer() {
     const recipient = Principal.fromText(recipientId);
     const amountToTransfer = Number(amount);
     const result = await token.transfer(recipient, amountToTransfer);
-    
+
     setFeedback(result);
     setHidden(false);
     setDisabled(false);
@@ -57,7 +57,7 @@ function Transfer() {
             Transfer
           </button>
         </p>
-        <p hidden={isHidden} >{feedback}</p>
+         <p hidden={isHidden} id="transfer-result" >{feedback}</p>
       </div>
     </div>
   );

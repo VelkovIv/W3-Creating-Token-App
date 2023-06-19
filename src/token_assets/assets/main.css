@@ -184,3 +184,7 @@ html {
     text-align: center;
     color: #d0d0d0;
   }
+
+  #transfer-result {
+    text-align: center;
+  }
