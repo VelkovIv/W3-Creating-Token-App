@@ -3,16 +3,23 @@ import Nat "mo:base/Nat";
 import Text "mo:base/Text";
 import HashMap "mo:base/HashMap";
 import Debug "mo:base/Debug";
+import Iter "mo:base/Iter";
 
 
 actor Token {
 
-    var owner: Principal = Principal.fromText("ejqzj-k7tjg-5aldz-4ieqx-hs2l2-aq3r2-ddskh-ylrsa-m3gnd-ozb3u-7ae");
-    var totalSupply : Nat = 1000000000;
-    var symbol : Text = "VLKV";
+    Debug.print("Check");
 
-    var balances= HashMap.HashMap<Principal, Nat>(1, Principal.equal, Principal.hash);
-    balances.put(owner, totalSupply);
+    let owner: Principal = Principal.fromText("ejqzj-k7tjg-5aldz-4ieqx-hs2l2-aq3r2-ddskh-ylrsa-m3gnd-ozb3u-7ae");
+    let totalSupply : Nat = 1_000_000_000_000;
+    let symbol : Text = "VLKV";
+
+    private stable var balanceEntries: [(Principal, Nat)] = [];
+    private var balances= HashMap.HashMap<Principal, Nat>(1, Principal.equal, Principal.hash);
+
+    if (balances.size() < 1){
+            balances.put(owner, totalSupply);
+        };
 
     public query func balanceOf(who: Principal) : async Nat {
        let balance : Nat = switch (balances.get(who)) {
@@ -29,11 +36,11 @@ actor Token {
     };
 
     public shared(msg) func payOut(): async Text {
-        // Debug.print(debug_show(msg.caller));
+        Debug.print(debug_show(msg.caller));
         if (balances.get(msg.caller) == null) {
             let amount = 10000;
-            balances.put(msg.caller, amount);
-            return "Success";
+            let result = await transfer(msg.caller, amount);
+            return result;
         } else {
             return "Already Claimed";
         };
@@ -41,10 +48,10 @@ actor Token {
     };
 
     public shared(msg) func transfer(to: Principal, amount: Nat): async Text {
-        let fromBallance = await balanceOf(msg.caller);
-        if (fromBallance >= amount) {
-            let newFromBallance : Nat = fromBallance - amount;
-            balances.put(msg.caller, newFromBallance);
+        let fromBalance = await balanceOf(msg.caller);
+        if (fromBalance >= amount) {
+            let newFromBalance : Nat = fromBalance - amount;
+            balances.put(msg.caller, newFromBalance);
 
             let toBalance = await balanceOf(to);
             let newToBalance = toBalance + amount;
@@ -54,7 +61,17 @@ actor Token {
         } else {
             return "Insufficient Funds"
         };
-
-        
     };
-}
+
+    system func preupgrade() {
+        balanceEntries := Iter.toArray(balances.entries());
+    };
+
+    system func postupgrade() {
+        balances := HashMap.fromIter<Principal, Nat>(balanceEntries.vals(), 1, Principal.equal, Principal.hash );
+        if (balances.size() < 1){
+            balances.put(owner, totalSupply);
+        };
+    };
+
+};
