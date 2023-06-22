@@ -1,4 +1,16 @@
-# Check your Balance
+# DServ
+
+Welcome to my new dserv project and to the internet computer development community. By default, creating a new project adds this README and some template files the project directory. You can edit these template files to customize the project and to include your own code to speed up the development cycle.
+
+To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+
+## ScreenShots
+
+![image](https://github.com/VelkovIv/W3-Creating-Token-App/assets/114020789/8a3d6fe7-1f96-427d-91de-fad4a3d6a6a9)
+
+
+
+## Check your Balance
 
 1. Find out your principal id:
 
